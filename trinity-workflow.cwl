@@ -1,30 +1,51 @@
 cwlVersion: v1.2
 class: CommandLineTool
-doc: De novo transcriptome assembly with Trinity
+doc: Run Trinity using the TrinityRNASEQ Docker image
 requirements:
   DockerRequirement:
-    dockerPull: docker.io/my_trinity:latest
+    dockerPull: trinityrnaseq/trinityrnaseq
 inputs:
-  reads:
-    type: File[]
-    inputBinding:
-      prefix: --left
-      itemSeparator: " "
-      separate: false
-  output_prefix:
+  seqType:
     type: string
     inputBinding:
-      prefix: --output
-outputs:
-  assembled_transcripts:
+      prefix: "--seqType"
+    doc: |
+      The type of input reads. Accepted values are 'fq' for FASTQ, 
+      'fa' for FASTA, or 'fq.gz' for gzipped FASTQ.
+  left:
     type: File
+    inputBinding:
+      prefix: "--left"
+    doc: |
+      Path to the left input reads in FASTQ format.
+  right:
+    type: File
+    inputBinding:
+      prefix: "--right"
+    doc: |
+      Path to the right input reads in FASTQ format.
+  max_memory:
+    type: string
+    inputBinding:
+      prefix: "--max_memory"
+    doc: |
+      Maximum amount of memory to be used by Trinity during assembly. 
+      Must be a string ending in 'G' or 'M' (e.g. '1G' or '500M').
+  CPU:
+    type: int
+    inputBinding:
+      prefix: "--CPU"
+    doc: |
+      Number of CPU cores to be used by Trinity during assembly.
+  output_name:
+    type: string
+    default: "trinity_out_dir"
+    doc: |
+      Name of the output directory to be created. Defaults to 
+      'trinity_out_dir' if not specified.
+outputs:
+  trinity_out_dir:
+    type: Directory
     outputBinding:
-      glob: "$(inputs.output_prefix)*.fasta"
-baseCommand: ["Trinity"]
-stdout: trinity.log
-arguments:
-  - "--seqType"
-  - "fq"
-  - "$(inputs.reads)"
-  - "--output"
-  - "$(inputs.output_prefix)"
+      glob: $(inputs.output_dir)
+baseCommand: Trinity
