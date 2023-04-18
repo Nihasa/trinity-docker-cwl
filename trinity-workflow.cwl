@@ -40,6 +40,8 @@ inputs:
   output_name:
     type: string
     default: "trinity_out_dir"
+    inputBinding:
+      prefix: "--output"
     doc: |
       Name of the output directory to be created. Defaults to 
       'trinity_out_dir' if not specified.
@@ -47,5 +49,5 @@ outputs:
   trinity_out_dir:
     type: Directory
     outputBinding:
-      glob: $(inputs.output_dir)
+      glob: $(inputs.output_name)
 baseCommand: Trinity
